@@ -30,6 +30,10 @@ export const initialSignupState = {
   vibes: [],
   inviteCode: '',
 
+  // Set when jumping back from the review summary, so the next Next returns
+  // straight to it instead of walking forward through every screen again.
+  returnTo: null,
+
   completed: false,
   handle: null,
 };
@@ -68,17 +72,20 @@ export function signupReducer(state, action) {
       return { ...state, otp: '', otpAttempts: 0 };
 
     case 'NEXT': {
+      // A pending return target wins once, then clears.
+      if (state.returnTo) return { ...state, screen: state.returnTo, returnTo: null };
       const next = SCREEN_ORDER[Math.min(SCREEN_ORDER.length - 1, indexOf(state.screen) + 1)];
       return { ...state, screen: next };
     }
 
     case 'BACK': {
+      // Going back by hand abandons the return jump; they are navigating freely now.
       const previous = SCREEN_ORDER[Math.max(0, indexOf(state.screen) - 1)];
-      return { ...state, screen: previous };
+      return { ...state, screen: previous, returnTo: null };
     }
 
     case 'GOTO':
-      return { ...state, screen: action.value };
+      return { ...state, screen: action.value, returnTo: action.returnTo ?? null };
 
     // Going back to change the email voids the code that was already sent.
     case 'CHANGE_EMAIL':

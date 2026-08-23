@@ -2,6 +2,7 @@ import { useState } from 'react';
 import ChipGroup from '../common/ChipGroup.jsx';
 import SearchSelect from '../common/SearchSelect.jsx';
 import TextField from '../common/TextField.jsx';
+import ReviewSummary from './ReviewSummary.jsx';
 import ScreenShell from './ScreenShell.jsx';
 import { useToast } from '../common/Toast.jsx';
 import useFieldErrors from '../../lib/useFieldErrors.js';
@@ -96,6 +97,8 @@ export default function ScreenFinish({ state, dispatch }) {
             </p>
           ))}
         </div>
+
+        <ReviewSummary state={state} dispatch={dispatch} />
 
         <div className="space-y-6 border-t border-white/10 pt-8">
           <p className="text-[15px] leading-relaxed text-white/55">

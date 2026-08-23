@@ -30,6 +30,36 @@ export function validateEmail(raw) {
   return null;
 }
 
+/**
+ * Catches the handful of domain typos that account for most bounced signups.
+ * Returns a suggested address, never an error — the address may well be right,
+ * so this offers a correction rather than blocking submission.
+ */
+const DOMAIN_TYPOS = {
+  'gmial.com': 'gmail.com',
+  'gmai.com': 'gmail.com',
+  'gmail.co': 'gmail.com',
+  'gnail.com': 'gmail.com',
+  'gmail.con': 'gmail.com',
+  'hotmial.com': 'hotmail.com',
+  'hotmai.com': 'hotmail.com',
+  'yahooo.com': 'yahoo.com',
+  'yaho.com': 'yahoo.com',
+  'outlok.com': 'outlook.com',
+  'outloo.com': 'outlook.com',
+  'iclod.com': 'icloud.com',
+  'icloud.co': 'icloud.com',
+};
+
+export function suggestEmail(raw) {
+  const value = (raw ?? '').trim().toLowerCase();
+  const at = value.lastIndexOf('@');
+  if (at < 1) return null;
+  const domain = value.slice(at + 1);
+  const fixed = DOMAIN_TYPOS[domain];
+  return fixed ? `${value.slice(0, at)}@${fixed}` : null;
+}
+
 export function validateConsent(checked) {
   return checked ? null : 'Please accept the Terms to continue.';
 }

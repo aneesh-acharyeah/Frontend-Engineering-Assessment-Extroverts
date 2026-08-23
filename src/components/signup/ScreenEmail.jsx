@@ -4,7 +4,7 @@ import Checkbox from '../common/Checkbox.jsx';
 import TextField from '../common/TextField.jsx';
 import ScreenShell from './ScreenShell.jsx';
 import useFieldErrors from '../../lib/useFieldErrors.js';
-import { validateConsent, validateEmail } from '../../lib/validators.js';
+import { suggestEmail, validateConsent, validateEmail } from '../../lib/validators.js';
 import { ApiError, DEMO, requestOtp } from '../../mock/api.js';
 import { useToast } from '../common/Toast.jsx';
 
@@ -20,6 +20,10 @@ export default function ScreenEmail({ state, dispatch }) {
     consent: validateConsent(state.consent),
   };
   const { touch, showError, validateAll, registerRef } = useFieldErrors(errorMap);
+
+  // A likely domain typo is not an error - the address may be right - so it is
+  // offered as a one-tap correction rather than blocking submission.
+  const suggestion = errorMap.email ? null : suggestEmail(state.email);
 
   const handleSubmit = async () => {
     if (busy || !validateAll()) return;
@@ -68,6 +72,20 @@ export default function ScreenEmail({ state, dispatch }) {
           }}
           onBlur={() => touch('email')}
         />
+
+        {suggestion ? (
+          <p className="-mt-4 text-sm text-white/50">
+            Did you mean{' '}
+            <button
+              type="button"
+              onClick={() => dispatch({ type: 'SET_FIELD', field: 'email', value: suggestion })}
+              className="font-medium text-vibe-300 underline decoration-vibe-300/40 underline-offset-4 transition-colors hover:decoration-vibe-300"
+            >
+              {suggestion}
+            </button>
+            ?
+          </p>
+        ) : null}
 
         <Checkbox
           ref={registerRef('consent')}
