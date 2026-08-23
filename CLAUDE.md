@@ -70,6 +70,10 @@ college), deliberately not at the call site, so it cannot be forgotten.
 
 ## Conventions
 
+- **Fields the app lacks but the brief requires** live on the finish screen, not in the
+  four numbered steps: the State/City/College cascade, the vibe picker, and the
+  optional mobile number (§3.B asks for numeric-only phone input explicitly). Keep
+  new brief-driven fields there so the four app steps stay faithful.
 - **Design tokens** are Tailwind theme extensions in `tailwind.config.js` (`ink`, `vibe`,
   `danger`). Do not hardcode hex values in components.
 - **Buttons are rounded rectangles, not pills.** `rounded-2xl`, full-width, stacked —

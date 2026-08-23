@@ -35,6 +35,7 @@ waiting for a random one.
 | OTP | anything else | Inline error, attempts counter, lockout after 3 |
 | Name | anything containing `errortest` | Global toast on Sign Up — server 500, form intact |
 | Date of birth | any date under 18 | Blocked in the sheet, with an explanation |
+| Mobile number | paste `+91 98765-43210` | Normalises to `9876543210` — country code stripped |
 
 ## What was replicated
 

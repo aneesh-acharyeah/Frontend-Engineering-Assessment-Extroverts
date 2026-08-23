@@ -28,6 +28,7 @@ export const initialSignupState = {
   city: '',
   college: '',
   vibes: [],
+  phone: '',
   inviteCode: '',
 
   // Set when jumping back from the review summary, so the next Next returns
