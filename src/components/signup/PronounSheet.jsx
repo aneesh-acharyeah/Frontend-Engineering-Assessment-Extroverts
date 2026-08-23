@@ -61,7 +61,7 @@ export default function PronounSheet({ open, onClose, initial, onConfirm }) {
       title="Select Pronouns"
       subtitle={`Select up to ${MAX_PRONOUNS} · ${selected.length} chosen`}
     >
-      <div className="pb-4">
+      <div className="pb-4 pt-1">
         <div className="mb-5 flex flex-wrap gap-2">
           {PRONOUN_SETS.map((set) => {
             const active = set.values.every((value) => selected.includes(value));

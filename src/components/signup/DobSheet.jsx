@@ -64,7 +64,7 @@ export default function DobSheet({ open, onClose, initial, onConfirm }) {
 
   return (
     <BottomSheet open={open} onClose={onClose} title="Date of Birth" subtitle="You must be 18 or older.">
-      <div className="pb-6">
+      <div className="pb-6 pt-3">
         <div className="flex gap-3">
           {FIELDS.map((field) => (
             <div key={field.key} className="flex-1">
