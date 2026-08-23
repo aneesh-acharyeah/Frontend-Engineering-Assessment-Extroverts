@@ -141,7 +141,7 @@ const SearchSelect = forwardRef(function SearchSelect(
           onBlur={onBlur}
           onKeyDown={handleKeyDown}
           className={[
-            'w-full cursor-pointer rounded-2xl border bg-white/[0.03] px-4 py-3.5 pr-11 text-base text-white',
+            'field-surface w-full cursor-pointer rounded-2xl border bg-white/[0.03] px-4 py-3.5 pr-11 text-base text-white',
             'placeholder:text-white/30 transition-colors duration-200',
             'focus:border-white/40 focus:bg-white/[0.07]',
             // A disabled dependent field must still read as a field, so its
