@@ -1,0 +1,9 @@
+node_modules
+dist
+.DS_Store
+*.local
+
+# Reference screenshots of the Extroverts app, used to match the design.
+# Kept locally but deliberately not published: they are the company's UI, not
+# our work, and this repo is public. Remove this line to include them.
+screenshots/

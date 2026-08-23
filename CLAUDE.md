@@ -1,0 +1,116 @@
+# CLAUDE.md
+
+Guidance for Claude Code when working in this repository.
+
+## What this is
+
+A front-end-only replication of the **Extroverts** mobile app (`com.pro.nubpack`) — its
+landing splash, terms screen, and signup wizard — built as a Frontend Engineering
+Assessment. There is no backend and no real authentication; `src/mock/api.js` simulates
+every network call.
+
+The deliverable is a **screen recording**, not the source. Fidelity to the app and the
+robustness of the form logic are what get graded.
+
+## Commands
+
+```bash
+npm run dev      # Vite dev server on :5173
+npm run build    # production build to dist/
+npm run preview  # serve the built output
+```
+
+There is no test runner and no linter configured. Verify changes by running the app.
+
+## Branching
+
+`develop` is the working branch. **Implement everything on `develop`, then merge into
+`main`.** Never commit directly to `main`.
+
+## Architecture
+
+**Stack:** React 18 · Vite · Tailwind · GSAP · Framer Motion · React Router.
+Chosen to mirror extroverts.app's own stack.
+
+Three routes, in `src/pages/`: `/` (Landing), `/signup` (Signup), `/terms` (Terms).
+
+### The wizard is a screen machine, not a step counter
+
+`src/state/signupReducer.js` holds **every screen's data in one reducer**. Screens are
+ordered by `SCREEN_ORDER` in `src/data/constants.js`; `NEXT`/`BACK` move an index along
+it. No screen component owns field state of its own.
+
+This is load-bearing: it is why **Back never loses data**. If you add a field, put it in
+the reducer's initial state — never in a screen's `useState`.
+
+The flow is: `email → otp → username → name → age → pronouns → finish → done`. Only the
+middle four are numbered steps (`STEP_INDEX`), matching the app's own four screens.
+
+`usePersistedReducer` mirrors state to `sessionStorage` so a mid-flow refresh restores.
+All storage access is wrapped in `try/catch` — never assume it is available.
+
+### Validation
+
+All validators live in `src/lib/validators.js` as **pure `(value) => string | null`
+functions**. `null` means valid. Add new ones there, not inline in components.
+
+`src/lib/useFieldErrors.js` owns *when* an error is shown, not whether one exists:
+on blur first, then on every keystroke once touched; `validateAll()` touches everything
+and focuses the first offender. Screens recompute their whole `errorMap` each render and
+hand it to the hook.
+
+**Field-level errors render under the field. Submission-level failures go to the global
+toast** (`useToast`). Keep that split — they must never compete.
+
+### Cross-field cascade
+
+State → City → College lives in `src/data/locations.js` as a nested map. The clearing
+rule is in the **reducer** (`SET_STATE_FIELD` clears city + college, `SET_CITY` clears
+college), deliberately not at the call site, so it cannot be forgotten.
+
+## Conventions
+
+- **Design tokens** are Tailwind theme extensions in `tailwind.config.js` (`ink`, `vibe`,
+  `danger`). Do not hardcode hex values in components.
+- **Buttons are rounded rectangles, not pills.** `rounded-2xl`, full-width, stacked —
+  white primary over outlined secondary. This matches the app; earlier guesses at
+  circular pills were wrong.
+- `Button`'s `loading` prop is the **only** duplicate-submit guard: it disables the
+  button and sets `aria-busy`. Use it rather than hand-rolling a submitting flag.
+- Every GSAP timeline must be gated on `useReducedMotion()` — GSAP writes inline styles
+  and ignores the CSS media query.
+- Type is Poppins (per the brief); the `E•` wordmark alone is set in a serif stack.
+
+## Mock API
+
+Failures are **deterministic**, so each error path can be demonstrated on cue during the
+recording. Do not make them random.
+
+| Trigger | Result |
+|---|---|
+| `taken@extroverts.app` | inline field error |
+| `fail@extroverts.app` | global toast |
+| OTP `123456` | the only accepted code |
+| name containing `errortest` | server 500 → global toast |
+| DOB under 18 | blocked in the sheet |
+
+Keep `README.md` and `RECORDING.md` in sync if these change.
+
+## Deliberate departures from the app
+
+These are graded improvements, not bugs. Do not "fix" them back:
+
+1. **18+ is enforced.** The app accepts any age despite its own Terms requiring 18+.
+2. **The OTP screen was rebuilt** — paste-to-fill, auto-advance, resend countdown,
+   masked address, attempt lockout. The app has none of this.
+3. **A "Step X of 4" indicator** exists; the app gives no sense of progress.
+4. **The DOB sheet validates as a calendar** (`31/02` is rejected).
+5. **The pronoun cap is visible** — the app silently ignores a 4th selection.
+6. **The full terms are expandable** — the app asks you to accept Terms it never shows.
+
+## Copy policy
+
+Reproduce the app's **UI strings verbatim** — the brief demands fidelity. But the
+long-form legal terms on `/terms` are **paraphrased**, because Extroverts' own
+Intellectual Property clause forbids reproducing them and the brief only asks for a
+"similar" page. Keep that line.

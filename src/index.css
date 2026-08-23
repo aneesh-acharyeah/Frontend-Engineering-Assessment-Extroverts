@@ -1,0 +1,154 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html {
+    -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-black font-sans text-white antialiased;
+    overflow-x: hidden;
+  }
+
+  /* Visible, on-brand focus ring for anything genuinely interactive. */
+  :focus-visible {
+    @apply outline-none ring-2 ring-vibe-500 ring-offset-2 ring-offset-black;
+  }
+
+  /*
+   * Headings are given tabindex="-1" purely so focus can be moved to them when
+   * a step changes; that is for screen-reader orientation, not a click target,
+   * so they must not paint a ring.
+   */
+  [tabindex='-1']:focus,
+  [tabindex='-1']:focus-visible {
+    @apply outline-none ring-0;
+  }
+
+  ::selection {
+    @apply bg-vibe-500 text-white;
+  }
+
+  /* Kill the number-input spinners; year/phone fields are numeric-only anyway. */
+  input[type='number']::-webkit-outer-spin-button,
+  input[type='number']::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Dark-mode the native date picker indicator. */
+  input[type='date']::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    opacity: 0.45;
+    cursor: pointer;
+  }
+  input[type='date']::-webkit-calendar-picker-indicator:hover {
+    opacity: 0.9;
+  }
+}
+
+@layer components {
+  .border-hairline {
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .flex-center {
+    @apply flex items-center justify-center;
+  }
+
+  /* Uppercase display heading, matching the app's `font-black tracking-wider` treatment. */
+  .display-title {
+    @apply font-black uppercase leading-[0.95] tracking-[0.02em];
+  }
+
+  .eyebrow {
+    @apply text-[10px] font-medium uppercase tracking-[0.22em] text-white/40 sm:text-xs;
+  }
+
+  /* Landing: infinite carousel track. Children are tripled, so -33.3333% loops seamlessly. */
+  .carousel-track {
+    @apply flex w-max gap-5 sm:gap-6;
+  }
+
+  /* Landing: the GSAP-pinned block that expands to fill the viewport. */
+  .mask-clip-path {
+    @apply absolute left-1/2 top-0 z-20 h-[60vh] w-[70vw] origin-center -translate-x-1/2 overflow-hidden rounded-3xl sm:h-[70vh] sm:w-[48vw];
+  }
+
+  /* Loader: audio equaliser bars. */
+  .indicator-line {
+    @apply h-5 w-[3px] origin-bottom rounded-full bg-white/30 transition-colors duration-300;
+  }
+  .indicator-line.active {
+    @apply animate-indicator-line bg-white;
+  }
+
+  .gradient-text {
+    @apply bg-gradient-to-r from-vibe-400 via-pink-400 to-amber-400 bg-clip-text text-transparent;
+  }
+}
+
+@layer utilities {
+  /* Purple organic blobs bleeding off the corners, as in the app screenshots. */
+  .blob {
+    @apply pointer-events-none absolute -z-10 rounded-full blur-[90px];
+  }
+
+  .glass {
+    @apply border border-white/10 bg-white/[0.04] backdrop-blur-xl;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/*
+ * Landing carousel. The list is rendered three times, so translating by exactly
+ * one third returns to an identical frame and the loop point is invisible.
+ * Declared here rather than only in tailwind.config because the track sets its
+ * animation via an inline style, which Tailwind cannot scan for.
+ */
+@keyframes carousel-scroll {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-33.3333%, 0, 0);
+  }
+}
+
+/* Success-screen confetti. Distance is in vh so it clears any viewport height. */
+@keyframes confetti-fall {
+  0% {
+    opacity: 1;
+    transform: translate3d(0, -10vh, 0) rotate(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--drift, 0), 110vh, 0) rotate(720deg);
+  }
+}
+
+/* Respect the OS setting: every decorative animation collapses to a static frame. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
