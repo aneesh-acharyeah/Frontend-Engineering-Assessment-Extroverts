@@ -7,9 +7,11 @@ import ScreenShell from './ScreenShell.jsx';
 import { useToast } from '../common/Toast.jsx';
 import useFieldErrors from '../../lib/useFieldErrors.js';
 import {
+  normalisePhone,
   validateCity,
   validateCollege,
   validateInviteCode,
+  validatePhone,
   validateState,
   validateVibes,
 } from '../../lib/validators.js';
@@ -42,6 +44,7 @@ export default function ScreenFinish({ state, dispatch }) {
     city: validateCity(state.city),
     college: validateCollege(state.college),
     vibes: validateVibes(state.vibes),
+    phone: validatePhone(state.phone),
     inviteCode: validateInviteCode(state.inviteCode),
   };
   const { touch, showError, validateAll, registerRef } = useFieldErrors(errorMap);
@@ -60,6 +63,7 @@ export default function ScreenFinish({ state, dispatch }) {
         city: state.city,
         college: state.college,
         vibes: state.vibes,
+        phone: state.phone,
         inviteCode: state.inviteCode,
       });
       dispatch({ type: 'COMPLETE', handle });
@@ -161,6 +165,27 @@ export default function ScreenFinish({ state, dispatch }) {
               dispatch({ type: 'SET_VIBES', value });
               touch('vibes');
             }}
+          />
+
+          <TextField
+            ref={registerRef('phone')}
+            label="Mobile number (optional)"
+            type="tel"
+            inputMode="numeric"
+            autoComplete="tel-national"
+            placeholder="98765 43210"
+            maxLength={10}
+            leading={<span className="text-[17px]">+91</span>}
+            value={state.phone}
+            error={showError('phone')}
+            hint="So your crew can reach you at the party. We never show it publicly."
+            // Numeric-only by stripping on change rather than relying on
+            // `pattern`, so a pasted "+91 98765-43210" is accepted and cleaned
+            // rather than rejected - country code included.
+            onChange={(event) =>
+              dispatch({ type: 'SET_FIELD', field: 'phone', value: normalisePhone(event.target.value) })
+            }
+            onBlur={() => touch('phone')}
           />
 
           <TextField

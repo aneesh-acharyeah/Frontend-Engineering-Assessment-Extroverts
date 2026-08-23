@@ -176,6 +176,28 @@ export function validateInviteCode(raw) {
   return null;
 }
 
+/**
+ * Digits-only, but country-code aware.
+ *
+ * A plain digit strip turns a pasted "+91 98765 43210" into "9198765432" -
+ * silently the wrong number, which is worse than rejecting it. A leading 91 or
+ * 0 that would push the value past the cap is a prefix, not part of the number.
+ */
+export function normalisePhone(raw, maxLength = 10) {
+  let digits = (raw ?? '').replace(/\D/g, '');
+  if (digits.length > maxLength && digits.startsWith('91')) digits = digits.slice(2);
+  if (digits.length > maxLength && digits.startsWith('0')) digits = digits.slice(1);
+  return digits.slice(0, maxLength);
+}
+
+export function validatePhone(raw) {
+  const value = (raw ?? '').trim();
+  if (!value) return null; // optional
+  if (!/^\d{10}$/.test(value)) return 'Enter a 10-digit mobile number.';
+  if (!/^[6-9]/.test(value)) return 'Indian mobile numbers start with 6, 7, 8 or 9.';
+  return null;
+}
+
 export const validateState = (v) => (v ? null : 'Select your state.');
 export const validateCity = (v) => (v ? null : 'Select your city.');
 export const validateCollege = (v) => (v ? null : 'Select your college.');
