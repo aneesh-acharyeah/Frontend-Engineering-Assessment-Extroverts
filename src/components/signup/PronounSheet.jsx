@@ -146,7 +146,7 @@ export default function PronounSheet({ open, onClose, initial, onConfirm }) {
                     addCustom();
                   }
                 }}
-                className="min-h-[48px] flex-1 rounded-xl border border-white/25 bg-transparent px-4 text-base text-white placeholder:text-white/25 focus:border-white/60"
+                className="min-h-[48px] flex-1 rounded-xl border border-white/40 bg-white/[0.06] px-4 text-base text-white placeholder:text-white/35 focus:border-white/70"
               />
               <Button size="sm" fullWidth={false} onClick={addCustom} disabled={!custom.trim() || atLimit}>
                 Add

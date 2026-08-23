@@ -92,8 +92,8 @@ export default function DobSheet({ open, onClose, initial, onConfirm }) {
                     refs.current[FIELDS[index - 1]?.key]?.focus();
                   }
                 }}
-                className={`min-h-[62px] w-full rounded-2xl border bg-transparent text-center text-xl tabular-nums text-white placeholder:text-white/30 transition-colors focus:border-white/70 ${
-                  error ? 'border-danger/70' : 'border-white/25'
+                className={`min-h-[62px] w-full rounded-2xl border bg-white/[0.06] text-center text-xl tabular-nums text-white placeholder:text-white/35 transition-colors focus:border-white/70 ${
+                  error ? 'border-danger/70' : 'border-white/40'
                 }`}
               />
             </div>
