@@ -42,12 +42,12 @@ const TextField = forwardRef(function TextField(
     .join(' ');
 
   const boxClasses = [
-    'w-full rounded-2xl border bg-transparent px-5 text-[17px] text-white',
-    'min-h-[68px] placeholder:text-white/25 transition-colors duration-200',
+    'field-surface w-full rounded-2xl border bg-white/[0.03] px-5 text-[17px] text-white',
+    'min-h-[68px] placeholder:text-white/30 transition-colors duration-200',
     'focus:border-white/60',
     leading ? 'pl-16' : '',
     trailing ? 'pr-12' : '',
-    error ? 'border-danger/70' : 'border-white/25',
+    error ? 'border-danger/70' : 'border-white/30',
   ]
     .filter(Boolean)
     .join(' ');

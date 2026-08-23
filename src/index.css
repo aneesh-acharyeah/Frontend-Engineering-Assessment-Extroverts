@@ -82,12 +82,46 @@
     @apply absolute left-1/2 top-0 z-20 h-[60vh] w-[70vw] origin-center -translate-x-1/2 overflow-hidden rounded-3xl sm:h-[70vh] sm:w-[48vw];
   }
 
-  /* Loader: audio equaliser bars. */
+  /*
+   * Audio equaliser bars.
+   *
+   * Heights are staggered by `--rest` so the control still reads as an
+   * equaliser when it is idle; four identical bars just look like a stray
+   * "||||" glyph. `origin-bottom` keeps them planted on a common baseline as
+   * they animate.
+   */
   .indicator-line {
-    @apply h-5 w-[3px] origin-bottom rounded-full bg-white/30 transition-colors duration-300;
+    @apply w-[3px] origin-bottom rounded-full bg-white/40 transition-all duration-300;
+    height: var(--rest, 0.75rem);
   }
   .indicator-line.active {
     @apply animate-indicator-line bg-white;
+    height: 1.25rem;
+  }
+
+  /*
+   * Shared field surface.
+   *
+   * A 1px alpha border is not reliable on its own: on a box whose height is
+   * fractional, the top edge lands on a half device-pixel and antialiases down
+   * to roughly half its intended opacity, while the bottom edge lands clean.
+   * The top is exactly the edge people read a box by, so it looked open.
+   *
+   * The inset highlight is a real 1px line painted inside the box, unaffected
+   * by that rounding, and it doubles as the "lit from above" cue that makes a
+   * control read as inset on a dark ground.
+   * Applied through the shadow utility rather than a raw `box-shadow`
+   * declaration: Tailwind composes `--tw-shadow` with `--tw-ring-shadow`, so
+   * the highlight and the focus ring coexist. A plain declaration here would
+   * sit in the components layer and wipe the ring out entirely.
+   */
+  .field-surface {
+    @apply shadow-[inset_0_1px_0_rgba(255,255,255,0.16)];
+  }
+
+  /* Sheets sit on #151515 rather than black, so the highlight works harder. */
+  .field-surface-raised {
+    @apply shadow-[inset_0_1px_0_rgba(255,255,255,0.26)];
   }
 
   .gradient-text {

@@ -64,15 +64,22 @@ export default function FloatingNav() {
             aria-pressed={audioOn}
             aria-label={audioOn ? 'Mute background audio' : 'Enable background audio'}
             title={audioOn ? 'Sound on' : 'Sound off'}
-            className="flex h-9 items-end gap-[3px] px-1"
+            className="group flex h-9 w-9 items-center justify-center rounded-full border border-white/10 transition-colors hover:border-white/30"
           >
-            {[1, 2, 3, 4].map((bar) => (
-              <span
-                key={bar}
-                className={`indicator-line ${audioOn ? 'active' : ''}`}
-                style={{ animationDelay: `${bar * 0.12}s` }}
-              />
-            ))}
+            {/*
+              Fixed square target so the bars sit on the row's optical centre
+              rather than drifting with their own heights, and a hairline ring
+              so it reads as a control rather than as text.
+            */}
+            <span className="flex h-5 items-center gap-[3px]">
+              {[0.5, 0.9, 0.65, 1].map((rest, index) => (
+                <span
+                  key={rest}
+                  className={`indicator-line ${audioOn ? 'active' : ''}`}
+                  style={{ '--rest': `${rest * 0.9}rem`, animationDelay: `${index * 0.12}s` }}
+                />
+              ))}
+            </span>
           </button>
 
           {LINKS.map((link) => (

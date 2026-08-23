@@ -30,7 +30,28 @@ export const DEMO = {
   networkEmail: 'fail@extroverts.app',
   validOtp: '123456',
   serverErrorName: 'errortest',
+  takenUsernames: ['party', 'extrovert', 'admin', 'himanshu', 'vaibhav', 'anish'],
 };
+
+/**
+ * Username availability.
+ *
+ * The app has no availability check at all — you only discover a clash after
+ * submitting everything. Checking here, debounced while typing, means the
+ * problem surfaces at the field that caused it.
+ */
+export async function checkUsername(username) {
+  await delay(700);
+  const normalised = username.trim().toLowerCase();
+  const taken = DEMO.takenUsernames.includes(normalised);
+  return {
+    available: !taken,
+    // Something to click rather than a dead end.
+    suggestions: taken
+      ? [`${normalised}_`, `${normalised}${new Date().getFullYear() % 100}`, `the${normalised}`]
+      : [],
+  };
+}
 
 export async function requestOtp(email) {
   await delay(1200);

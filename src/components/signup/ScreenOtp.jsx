@@ -44,11 +44,15 @@ export default function ScreenOtp({ state, dispatch }) {
         if (caught instanceof ApiError && caught.field === 'otp') {
           const remaining = attemptsLeft - 1;
           dispatch({ type: 'OTP_FAILED' });
-          setError(
-            remaining > 0
-              ? `That code is not right. ${remaining} ${remaining === 1 ? 'try' : 'tries'} left.`
-              : 'Too many incorrect attempts. Request a new code to continue.'
-          );
+          if (remaining > 0) {
+            setError(`That code is not right. ${remaining} ${remaining === 1 ? 'try' : 'tries'} left.`);
+          } else {
+            // Locking the user out while the resend timer is still running would
+            // tell them to do the one thing they cannot do. Free the timer so the
+            // instruction is actionable the moment it appears.
+            restartCountdown(0);
+            setError('Too many incorrect attempts. Request a new code to continue.');
+          }
         } else {
           toast.error(caught.message);
         }
@@ -56,7 +60,7 @@ export default function ScreenOtp({ state, dispatch }) {
         setBusy(false);
       }
     },
-    [busy, locked, attemptsLeft, dispatch, toast]
+    [busy, locked, attemptsLeft, dispatch, toast, restartCountdown]
   );
 
   const handleResend = async () => {

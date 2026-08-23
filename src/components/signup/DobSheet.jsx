@@ -64,7 +64,7 @@ export default function DobSheet({ open, onClose, initial, onConfirm }) {
 
   return (
     <BottomSheet open={open} onClose={onClose} title="Date of Birth" subtitle="You must be 18 or older.">
-      <div className="pb-6">
+      <div className="pb-6 pt-3">
         <div className="flex gap-3">
           {FIELDS.map((field) => (
             <div key={field.key} className="flex-1">
@@ -92,8 +92,8 @@ export default function DobSheet({ open, onClose, initial, onConfirm }) {
                     refs.current[FIELDS[index - 1]?.key]?.focus();
                   }
                 }}
-                className={`min-h-[62px] w-full rounded-2xl border bg-transparent text-center text-xl tabular-nums text-white placeholder:text-white/30 transition-colors focus:border-white/70 ${
-                  error ? 'border-danger/70' : 'border-white/25'
+                className={`field-surface-raised h-16 w-full rounded-2xl border bg-white/[0.07] text-center text-xl tabular-nums text-white placeholder:text-white/40 transition-colors focus:border-white/70 ${
+                  error ? 'border-danger/70' : 'border-white/45'
                 }`}
               />
             </div>

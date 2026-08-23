@@ -108,7 +108,12 @@ export default function BottomSheet({ open, onClose, title, subtitle, children }
               </button>
             </div>
 
-            <div className="no-scrollbar flex-1 overflow-y-auto px-6">{children}</div>
+            {/*
+              pt-2 is load-bearing, not decoration: `overflow-y-auto` clips at
+              its own edge, and without it the first child's top border and
+              focus ring sat exactly on that boundary and were cut.
+            */}
+            <div className="no-scrollbar flex-1 overflow-y-auto px-6 pt-2">{children}</div>
           </motion.div>
         </div>
       ) : null}

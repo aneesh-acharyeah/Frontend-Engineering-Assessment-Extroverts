@@ -105,8 +105,20 @@ These are graded improvements, not bugs. Do not "fix" them back:
    masked address, attempt lockout. The app has none of this.
 3. **A "Step X of 4" indicator** exists; the app gives no sense of progress.
 4. **The DOB sheet validates as a calendar** (`31/02` is rejected).
-5. **The pronoun cap is visible** — the app silently ignores a 4th selection.
+5. **The pronoun cap is visible** — the app silently ignores a 4th selection — and the
+   common sets are one tap via `PRONOUN_SETS`.
 6. **The full terms are expandable** — the app asks you to accept Terms it never shows.
+7. **Username availability is checked** (debounced, `checkUsername`), with one-tap
+   suggestions. The "taken" message is deliberately NOT gated behind the touched rule —
+   it arrives after typing stops, and the suggestions make no sense without it.
+8. **Email domain typos** get a one-tap correction (`suggestEmail`) — a suggestion, not
+   a block, since the address may be right.
+9. **A review summary** on the finish screen. Its Edit buttons use `GOTO` with
+   `returnTo`, so the next `NEXT` returns straight to finish instead of walking forward.
+10. **OTP lockout clears the resend timer**, so "request a new code" is actionable the
+   moment it appears.
+11. **Copy fixes** — the app's "upto" and "shown as on members" are corrected. Its
+   `EARLLY IS ICONIC` typo is an intentional joke and stays.
 
 ## Copy policy
 

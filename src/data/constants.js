@@ -38,6 +38,19 @@ export const PRONOUNS = [
 
 export const MAX_PRONOUNS = 3;
 
+/**
+ * The app lists pronouns as individual words, so the common sets cost three
+ * separate taps and it is easy to pick an inconsistent mix (he + hers). These
+ * quick-picks fill a whole set at once; the full list stays underneath.
+ */
+export const PRONOUN_SETS = [
+  { id: 'he-him', label: 'he / him', values: ['he', 'him', 'his'] },
+  { id: 'she-her', label: 'she / her', values: ['she', 'her', 'hers'] },
+  { id: 'they-them', label: 'they / them', values: ['they', 'them', 'theirs'] },
+];
+
+export const CUSTOM_PRONOUN_MAX = 12;
+
 /** Their own Terms require 18+; the app collects age but never enforces it. */
 export const MIN_AGE = 18;
 export const MAX_AGE = 100;
