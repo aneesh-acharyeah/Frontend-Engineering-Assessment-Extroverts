@@ -27,6 +27,10 @@ There is no test runner and no linter configured. Verify changes by running the 
 `develop` is the working branch. **Implement everything on `develop`, then merge into
 `main`.** Never commit directly to `main`.
 
+Merges to `main` use `--no-ff` so each release boundary stays visible. Because that
+leaves `main` with a merge commit `develop` does not have, **back-merge `main` into
+`develop` afterwards** (a fast-forward) so the branches do not drift apart.
+
 ## Architecture
 
 **Stack:** React 18 · Vite · Tailwind · GSAP · Framer Motion · React Router.
@@ -76,11 +80,23 @@ college), deliberately not at the call site, so it cannot be forgotten.
   new brief-driven fields there so the four app steps stay faithful.
 - **Design tokens** are Tailwind theme extensions in `tailwind.config.js` (`ink`, `vibe`,
   `danger`). Do not hardcode hex values in components.
+- **Field surfaces use `.field-surface` / `.field-surface-raised`** (in `index.css`), which
+  paint a 1px inset top highlight. These are applied via `@apply shadow-[...]`, never as a
+  raw `box-shadow` declaration: Tailwind composes `--tw-shadow` with `--tw-ring-shadow`, so
+  the highlight and the focus ring coexist. A plain `box-shadow` in the components layer
+  would silently wipe the focus ring off every field in the app.
+- **`BottomSheet`'s scroll container needs its `pt-2`.** It is `overflow-y-auto`, which clips
+  at its own edge; without that padding the first child's top border and focus ring sit on
+  the clip boundary and get cut. This is not decorative spacing — do not remove it.
 - **Buttons are rounded rectangles, not pills.** `rounded-2xl`, full-width, stacked —
   white primary over outlined secondary. This matches the app; earlier guesses at
   circular pills were wrong.
 - `Button`'s `loading` prop is the **only** duplicate-submit guard: it disables the
   button and sets `aria-busy`. Use it rather than hand-rolling a submitting flag.
+- **Numeric input is sanitised on change, not blocked by `pattern`**, so pasted values are
+  cleaned rather than rejected. Use `digitsOnly` for plain digit fields, but `normalisePhone`
+  for phone numbers — it also strips a leading `91`/`0` that would otherwise overflow the
+  10-digit cap and leave the user with a silently wrong number.
 - Every GSAP timeline must be gated on `useReducedMotion()` — GSAP writes inline styles
   and ignores the CSS media query.
 - Type is Poppins (per the brief); the `E•` wordmark alone is set in a serif stack.
@@ -97,6 +113,8 @@ recording. Do not make them random.
 | OTP `123456` | the only accepted code |
 | name containing `errortest` | server 500 → global toast |
 | DOB under 18 | blocked in the sheet |
+| username in `DEMO.takenUsernames` (`anish`, `party`, …) | taken, with one-tap suggestions |
+| email with a typo'd domain (`gmial.com`) | one-tap correction offered |
 
 Keep `README.md` and `RECORDING.md` in sync if these change.
 
