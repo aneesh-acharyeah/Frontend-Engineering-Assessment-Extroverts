@@ -34,6 +34,8 @@ waiting for a random one.
 | OTP | `123456` | The only accepted code |
 | OTP | anything else | Inline error, attempts counter, lockout after 3 |
 | Name | anything containing `errortest` | Global toast on Sign Up — server 500, form intact |
+| Username | `anish`, `party`, `extrovert`, `admin` | Taken, with one-tap alternatives |
+| Email | `anish@gmial.com` | Offers a one-tap correction to `gmail.com` |
 | Date of birth | any date under 18 | Blocked in the sheet, with an explanation |
 | Mobile number | paste `+91 98765-43210` | Normalises to `9876543210` — country code stripped |
 

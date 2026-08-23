@@ -1,4 +1,5 @@
-import { OTP_LENGTH } from '../data/constants.js';
+import { OTP_LENGTH, USERNAME_MAX } from '../data/constants.js';
+import { validateUsername } from '../lib/validators.js';
 
 /**
  * Simulated backend. This is a front-end-only exercise, so every call resolves
@@ -44,13 +45,24 @@ export async function checkUsername(username) {
   await delay(700);
   const normalised = username.trim().toLowerCase();
   const taken = DEMO.takenUsernames.includes(normalised);
-  return {
-    available: !taken,
-    // Something to click rather than a dead end.
-    suggestions: taken
-      ? [`${normalised}_`, `${normalised}${new Date().getFullYear() % 100}`, `the${normalised}`]
-      : [],
-  };
+
+  return { available: !taken, suggestions: taken ? suggestFor(normalised) : [] };
+}
+
+/**
+ * Alternatives for a taken username.
+ *
+ * Every candidate is run back through `validateUsername`, because a suggestion
+ * the form then rejects is worse than no suggestion at all — and it is easy to
+ * write one by accident (`name_` trips the "cannot end in an underscore" rule).
+ * Anything already taken is dropped too.
+ */
+function suggestFor(name) {
+  const year = new Date().getFullYear() % 100;
+  const stem = name.slice(0, USERNAME_MAX - 7);
+  return [`${stem}${year}`, `the${stem}`, `${stem}.irl`, `${stem}_hq`]
+    .filter((candidate) => !validateUsername(candidate) && !DEMO.takenUsernames.includes(candidate))
+    .slice(0, 3);
 }
 
 export async function requestOtp(email) {
