@@ -7,6 +7,11 @@ import FieldError from './FieldError.jsx';
  * Used for the State -> City -> College cascade. When `disabled` (because the
  * parent field is still empty) it shows `disabledHint` instead of the
  * placeholder, so the dependency is explained rather than just greyed out.
+ *
+ * `query === null` means "the user is not typing", and the input then shows the
+ * committed value. Only once they type does `query` become a string and take
+ * over the display. Without that distinction an open list with an empty search
+ * box renders as an empty field, and the selection just made looks lost.
  */
 const SearchSelect = forwardRef(function SearchSelect(
   {
@@ -28,7 +33,7 @@ const SearchSelect = forwardRef(function SearchSelect(
   const errorId = `${id}-error`;
 
   const [open, setOpen] = useState(false);
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
   const rootRef = useRef(null);
@@ -42,19 +47,33 @@ const SearchSelect = forwardRef(function SearchSelect(
   }));
 
   const filtered = useMemo(() => {
-    const needle = query.trim().toLowerCase();
+    const needle = query?.trim().toLowerCase();
     if (!needle) return options;
     return options.filter((option) => option.toLowerCase().includes(needle));
   }, [options, query]);
 
-  // Click-outside closes and reverts the query to the committed value.
+  const openList = () => {
+    setOpen(true);
+    setQuery(null);
+    setActiveIndex(Math.max(0, options.indexOf(value)));
+    // Select here as well as on focus: reopening an already-focused field
+    // fires no focus event, and without the selection the next keystroke
+    // appends to the committed value ("Faridabad" + "guru") instead of
+    // starting a fresh search.
+    inputRef.current?.select();
+  };
+
+  // Closing always drops the search text; the committed value is what shows.
+  const closeList = () => {
+    setOpen(false);
+    setQuery(null);
+  };
+
+  // Click-outside closes and reverts to the committed value.
   useEffect(() => {
     if (!open) return undefined;
     const onPointerDown = (event) => {
-      if (!rootRef.current?.contains(event.target)) {
-        setOpen(false);
-        setQuery('');
-      }
+      if (!rootRef.current?.contains(event.target)) closeList();
     };
     document.addEventListener('mousedown', onPointerDown);
     return () => document.removeEventListener('mousedown', onPointerDown);
@@ -67,8 +86,10 @@ const SearchSelect = forwardRef(function SearchSelect(
 
   const commit = (option) => {
     onChange(option);
-    setQuery('');
-    setOpen(false);
+    closeList();
+    // Focus returns to the input rather than being stranded on the option
+    // button that is about to unmount. Opening is deliberately NOT a focus
+    // side effect, or this would re-open the list it just closed.
     inputRef.current?.focus();
   };
 
@@ -76,8 +97,7 @@ const SearchSelect = forwardRef(function SearchSelect(
     if (disabled) return;
     if (!open && ['ArrowDown', 'Enter', ' '].includes(event.key)) {
       event.preventDefault();
-      setOpen(true);
-      setActiveIndex(Math.max(0, filtered.indexOf(value)));
+      openList();
       return;
     }
     if (!open) return;
@@ -97,19 +117,17 @@ const SearchSelect = forwardRef(function SearchSelect(
         break;
       case 'Escape':
         event.preventDefault();
-        setOpen(false);
-        setQuery('');
+        closeList();
         break;
       case 'Tab':
-        setOpen(false);
-        setQuery('');
+        closeList();
         break;
       default:
         break;
     }
   };
 
-  const displayed = open ? query : (value ?? '');
+  const displayed = query ?? value ?? '';
 
   return (
     <div className={className} ref={rootRef}>
@@ -137,7 +155,17 @@ const SearchSelect = forwardRef(function SearchSelect(
             setActiveIndex(0);
             if (!open) setOpen(true);
           }}
-          onFocus={() => !disabled && setOpen(true)}
+          // The caret is suppressed on purpose: this reads as a select, so a
+          // click toggles the list and leaves the current value selected, and
+          // the next keystroke replaces it rather than appending to it.
+          onMouseDown={(event) => {
+            if (disabled) return;
+            event.preventDefault();
+            inputRef.current?.focus();
+            if (open) closeList();
+            else openList();
+          }}
+          onFocus={(event) => event.target.select()}
           onBlur={onBlur}
           onKeyDown={handleKeyDown}
           className={[
@@ -169,7 +197,9 @@ const SearchSelect = forwardRef(function SearchSelect(
             className="no-scrollbar absolute z-30 mt-2 max-h-60 w-full overflow-y-auto rounded-2xl border border-white/10 bg-[#111] p-1.5 shadow-2xl shadow-black/60"
           >
             {filtered.length === 0 ? (
-              <li className="px-3 py-3 text-sm text-white/35">No matches for “{query}”</li>
+              <li className="px-3 py-3 text-sm text-white/35">
+                {query ? `No matches for “${query}”` : 'Nothing to choose from yet'}
+              </li>
             ) : (
               filtered.map((option, index) => (
                 <li key={option}>
