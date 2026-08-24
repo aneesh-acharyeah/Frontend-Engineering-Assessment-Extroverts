@@ -88,6 +88,12 @@ college), deliberately not at the call site, so it cannot be forgotten.
 - **`BottomSheet`'s scroll container needs its `pt-2`.** It is `overflow-y-auto`, which clips
   at its own edge; without that padding the first child's top border and focus ring sit on
   the clip boundary and get cut. This is not decorative spacing — do not remove it.
+- **`SearchSelect` opens on click and keypress, never on focus.** Focus-to-open looks
+  harmless but breaks two things: committing an option refocuses the input, which
+  re-opens the list in the same batch that closed it; and `useFieldErrors` focusing an
+  invalid field would blast a dropdown open over the error it just rendered. Its `query`
+  state uses `null` to mean "not typing" so the input keeps showing the committed value
+  while the list is open — with `''` there, a fresh selection renders as an empty field.
 - **Buttons are rounded rectangles, not pills.** `rounded-2xl`, full-width, stacked —
   white primary over outlined secondary. This matches the app; earlier guesses at
   circular pills were wrong.
